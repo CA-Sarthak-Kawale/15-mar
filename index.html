@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CA Sarthak Kawale | Investment Banking</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --gold-dim: rgba(201,168,76,0.12);
+      --gold-border: rgba(201,168,76,0.25);
+      --black: #070707;
+      --surface: #0f0f0f;
+      --surface2: #161616;
+      --text: #F5F2EC;
+      --text-dim: rgba(245,242,236,0.85);
+      --font-serif: 'Cormorant Garamond', serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    .cursor {
+      position: fixed; width: 8px; height: 8px;
+      background: var(--gold); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s;
+    }
+    .cursor-ring {
+      position: fixed; width: 32px; height: 32px;
+      border: 1px solid rgba(201,168,76,0.5); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.25s, height 0.25s, opacity 0.2s;
+    }
+
+    /* GRAIN */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 500; opacity: 0.5;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.6rem 5vw;
+      transition: background 0.4s, border-color 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(7,7,7,0.96);
+      border-bottom: 1px solid var(--gold-border);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      letter-spacing: 0.18em; color: var(--gold);
+      text-transform: uppercase; text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.15em; color: var(--text);
+      text-decoration: none; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0 5vw 8vh; position: relative; overflow: hidden;
+    }
+    .hero-bg-line {
+      position: absolute; top: 0; right: 10vw;
+      width: 1px; height: 100%;
+      background: linear-gradient(to bottom, transparent 0%, var(--gold-border) 30%, var(--gold-border) 70%, transparent 100%);
+    }
+    .hero-bg-line2 {
+      position: absolute; top: 0; right: 30vw;
+      width: 1px; height: 100%;
+      background: linear-gradient(to bottom, transparent 10%, rgba(201,168,76,0.06) 40%, rgba(201,168,76,0.06) 60%, transparent 90%);
+    }
+    .hero-name {
+      font-size: clamp(3.5rem, 9vw, 9rem); font-weight: 300;
+      line-height: 0.95; letter-spacing: -0.01em; margin-bottom: 0.6rem;
+      opacity: 0; animation: fadeUp 0.9s forwards 0.3s;
+    }
+    .hero-name em { font-style: normal; color: var(--gold-light); }
+    .hero-qual {
+      font-family: var(--font-mono); font-size: 1rem;
+      letter-spacing: 0.22em; color: var(--text-dim);
+      text-transform: uppercase; margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.9s forwards 0.5s;
+    }
+    .hero-qual em { font-style: normal; color: var(--gold); }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.4rem); color: var(--text-dim);
+      font-weight: 300; letter-spacing: 0.04em;
+      max-width: 100%; margin-bottom: 3rem; white-space: nowrap;
+      opacity: 0; animation: fadeUp 0.9s forwards 0.65s;
+    }
+    .hero-ctas {
+      display: flex; gap: 1.2rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.9s forwards 0.8s;
+    }
+    .btn-gold {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--black); background: var(--gold);
+      padding: 0.9rem 2.2rem; text-decoration: none;
+      transition: background 0.2s, transform 0.2s; display: inline-block;
+    }
+    .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-outline {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gold); background: transparent;
+      border: 1px solid var(--gold-border);
+      padding: 0.9rem 2.2rem; text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s; display: inline-block;
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold-light); transform: translateY(-2px); }
+    .hero-scroll {
+      position: absolute; bottom: 3rem; right: 5vw;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      opacity: 0; animation: fadeUp 0.9s forwards 1.2s;
+    }
+    .hero-scroll span {
+      font-family: var(--font-mono); font-size: 0.55rem;
+      letter-spacing: 0.2em; color: var(--text-dim);
+      text-transform: uppercase; writing-mode: vertical-rl;
+    }
+    .scroll-line {
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s infinite;
+    }
+
+    /* SECTIONS */
+    section { padding: 8rem 5vw; }
+    .section-label {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .section-label::after {
+      content: ''; flex: 1; max-width: 60px;
+      height: 1px; background: var(--gold-border);
+    }
+    .section-title {
+      font-size: clamp(2.2rem, 4.5vw, 4rem);
+      font-weight: 300; line-height: 1.1; margin-bottom: 3rem;
+      white-space: nowrap;
+    }
+    .section-title em { font-style: italic; color: var(--gold-light); }
+
+    /* ABOUT */
+    #about {
+      display: grid; grid-template-columns: 1fr 1.42fr;
+      gap: 6rem; align-items: start;
+      border-top: 1px solid var(--gold-border);
+    }
+    .about-left .section-title { margin-bottom: 0; white-space: normal; }
+    .about-text {
+      font-size: 1.15rem; line-height: 1.85;
+      color: var(--text-dim); margin-bottom: 1.8rem;
+    }
+    .about-text strong { color: var(--text); font-weight: 400; }
+
+    /* WORK */
+    #work { border-top: 1px solid var(--gold-border); }
+    .work-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 1.5px; background: var(--gold-border);
+    }
+    .work-card {
+      background: var(--surface); padding: 3rem;
+      position: relative; overflow: hidden;
+      transition: background 0.3s; text-decoration: none;
+      color: inherit; display: block;
+    }
+    .work-card::before {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 100%; height: 2px; background: var(--gold);
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+    }
+    .work-card:hover { background: var(--surface2); }
+    .work-card:hover::before { transform: scaleX(1); }
+    .work-card-num { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 2rem; }
+    .work-card-title { font-size: 1.5rem; font-weight: 300; margin-bottom: 1rem; line-height: 1.2; }
+    .work-card-desc { font-size: 0.95rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 2rem; }
+    .work-card-tag {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--gold); border: 1px solid var(--gold-border);
+      padding: 0.3rem 0.8rem; display: inline-block;
+    }
+    .work-card-arrow {
+      position: absolute; bottom: 2.5rem; right: 2.5rem;
+      font-size: 1.2rem; color: var(--gold); opacity: 0;
+      transform: translate(-6px, 6px); transition: opacity 0.3s, transform 0.3s;
+    }
+    .work-card:hover .work-card-arrow { opacity: 1; transform: translate(0, 0); }
+
+    /* WORK EXPERIENCE */
+    #transactions { border-top: 1px solid var(--gold-border); }
+    .tx-firm-note {
+      font-family: var(--font-mono); font-size: 0.8rem;
+      color: var(--text-dim); letter-spacing: 0.08em;
+      margin-bottom: 2.5rem;
+    }
+    .tx-table { width: 100%; border-collapse: collapse; }
+    .tx-table thead tr { border-bottom: 1px solid var(--gold-border); }
+    .tx-table th {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); padding: 1rem 1.5rem 1rem 0;
+      text-align: left; font-weight: 400;
+    }
+    .tx-table tbody tr { border-bottom: 1px solid rgba(201,168,76,0.08); transition: background 0.2s; }
+    .tx-table tbody tr:hover { background: var(--gold-dim); }
+    .tx-table td {
+      padding: 1.6rem 1.5rem 1.6rem 0; font-size: 0.95rem;
+      vertical-align: top; color: var(--text-dim); line-height: 1.6;
+    }
+    .tx-table td:first-child { color: var(--text); font-size: 1rem; }
+    .tx-badge {
+      font-family: var(--font-mono); font-size: 0.55rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.25rem 0.65rem; border: 1px solid var(--gold-border);
+      color: var(--gold); white-space: nowrap; display: inline-block;
+    }
+    .tx-empty { color: var(--text-dim); opacity: 0.4; }
+
+    /* SKILLS */
+    #skills { border-top: 1px solid var(--gold-border); background: var(--surface); }
+    .skills-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px; background: var(--gold-border); margin-top: 1rem;
+    }
+    .skill-block { background: var(--surface); padding: 2.5rem 2rem; transition: background 0.2s; }
+    .skill-block:hover { background: var(--surface2); }
+    .skill-block-title {
+      font-family: var(--font-mono); font-size: 0.62rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.2rem;
+    }
+    .skill-items { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .skill-items li { font-size: 0.9rem; color: var(--text-dim); padding-left: 1rem; position: relative; }
+    .skill-items li::before { content: '*'; position: absolute; left: 0; color: var(--gold); font-size: 0.8rem; }
+
+    /* CONTACT */
+    #contact {
+      border-top: 1px solid var(--gold-border);
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6rem; align-items: center;
+    }
+    .contact-left .section-title { margin-bottom: 1.5rem; white-space: nowrap; }
+    .contact-tagline {
+      font-size: 1.1rem; color: var(--text);
+      line-height: 1.8; margin-bottom: 2.5rem;
+    }
+    .contact-links { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--gold-border); }
+    .contact-link {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.4rem 0; border-bottom: 1px solid var(--gold-border);
+      text-decoration: none; color: var(--text); font-size: 1rem;
+      transition: color 0.2s, padding-left 0.2s;
+    }
+    .contact-link:hover { color: var(--gold); padding-left: 0.5rem; }
+    .contact-link-label {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.15em; color: var(--text-dim); text-transform: uppercase;
+    }
+    .contact-link:hover .contact-link-label { color: var(--gold); }
+    .contact-link-arrow { color: var(--gold); font-size: 0.9rem; }
+    .contact-right { display: flex; flex-direction: column; gap: 2rem; }
+    .contact-detail-block {
+      padding: 2rem; border: 1px solid var(--gold-border); background: var(--surface);
+    }
+    .contact-detail-label {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 0.5rem;
+    }
+    .contact-detail-value { font-size: 1.05rem; color: var(--text); line-height: 1.6; }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 5vw; border-top: 1px solid var(--gold-border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    footer p { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.12em; color: var(--text-dim); }
+    footer p em { font-style: normal; color: var(--gold); }
+    .footer-gold { color: var(--gold) !important; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      #about, #contact { grid-template-columns: 1fr; gap: 3rem; }
+      .work-grid, .skills-grid { grid-template-columns: 1fr; }
+      nav { padding: 1.2rem 5vw; }
+      .section-title { white-space: normal; }
+      .contact-left .section-title { white-space: normal; }
+      .hero-sub { white-space: normal; }
+    }
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      body { cursor: auto; }
+      .cursor, .cursor-ring { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">CA Sarthak Kawale</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#work">Portfolio</a></li>
+      <li><a href="#transactions">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg-line"></div>
+    <div class="hero-bg-line2"></div>
+    <h1 class="hero-name"><em>S</em>arthak <em>K</em>awale</h1>
+    <p class="hero-qual"><em>C</em>hartered <em>A</em>ccountant &nbsp;·&nbsp; Jan '26</p>
+    <p class="hero-sub">Investment Banking | Deal Advisory &amp; Valuation Professional</p>
+    <div class="hero-ctas">
+      <a href="#work" class="btn-gold">View Work</a>
+      <a href="#contact" class="btn-outline">Get in Touch</a>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-left reveal">
+      <div class="section-label">01 · About</div>
+      <h2 class="section-title">Finance.<br /><em>First principles.</em></h2>
+    </div>
+    <div class="about-right reveal">
+      <p class="about-text">
+        Focused on transaction advisory and valuation, with 3 years of experience supporting M&amp;A and capital raising mandates during CA articleship at <strong>Acumen M&amp;A Advisors</strong>, the India affiliate of Woodbridge International.
+      </p>
+      <p class="about-text">
+        Qualified Chartered Accountant (first attempt). Advised on M&amp;A transactions, capital raises, and IPO mandates. Built financial models, prepared CIMs and supported investor outreach and negotiations with founders and CXOs. Transaction exposure ranged from <strong>INR 100 Cr fundraises</strong> to a <strong>USD 125 Mn capital raise</strong>.
+      </p>
+      <p class="about-text">
+        Financial Modeling · DCF · Trading &amp; Transaction Comps · S&amp;P Capital IQ
+      </p>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="work">
+    <div class="reveal">
+      <div class="section-label">02 · Portfolio</div>
+      <h2 class="section-title">Portfolio of work samples <em>(Independent)</em></h2>
+    </div>
+    <div class="work-grid reveal">
+
+      <a href="https://docs.google.com/spreadsheets/d/1IflBZPW3XObschC4ad2V7dILqGwcwOgy/edit?usp=drive_link&ouid=107574976255725116374&rtpof=true&sd=true" target="_blank" class="work-card">
+        <div class="work-card-num">W.01</div>
+        <div class="work-card-title">Hindustan Unilever — Financial Model</div>
+        <div class="work-card-desc">Built a fully integrated three-statement financial model for Hindustan Unilever including operating forecasts, WACC estimation, beta regression and intrinsic valuation using DCF and trading comparables.</div>
+        <span class="work-card-tag">3-STATEMENT DCF · EXCEL</span>
+        <div class="work-card-arrow">↗</div>
+      </a>
+
+      <a href="https://docs.google.com/spreadsheets/d/1qLab7Gzk7TUZb1eCCukIOTNtESL8vxBj/edit?usp=drive_link&ouid=107574976255725116374&rtpof=true&sd=true" target="_blank" class="work-card">
+        <div class="work-card-num">W.02</div>
+        <div class="work-card-title">HUL Trading Comparables Valuation</div>
+        <div class="work-card-desc">Developed a comparable company analysis benchmarking Hindustan Unilever against listed Indian FMCG peers using EV-based trading multiples to derive relative valuation ranges.</div>
+        <span class="work-card-tag">TRADING COMPS · VALUATION · EXCEL</span>
+        <div class="work-card-arrow">↗</div>
+      </a>
+
+      <a href="https://docs.google.com/spreadsheets/d/1NxbOMKmayBEWDhzp1pO2NjsrmD5f9Qq0/edit?usp=drive_link&ouid=107574976255725116374&rtpof=true&sd=true" target="_blank" class="work-card">
+        <div class="work-card-num">W.03</div>
+        <div class="work-card-title">HUL – Mrs. Bector's M&amp;A Merger Model</div>
+        <div class="work-card-desc">Constructed a hypothetical acquisition of Mrs. Bectors Food Specialities by Hindustan Unilever including transaction structure, pro-forma financials and acquisition impact analysis.</div>
+        <span class="work-card-tag">M&amp;A · MERGER MODEL · EXCEL</span>
+        <div class="work-card-arrow">↗</div>
+      </a>
+
+      <a href="https://drive.google.com/drive/folders/1yJgRvKPvGbO6NLfCMQa6sPsm2ll2jEBq?usp=drive_link" target="_blank" class="work-card">
+        <div class="work-card-num">W.04</div>
+        <div class="work-card-title">Other Work</div>
+        <div class="work-card-desc">Additional analytical work including share price analysis, financial analysis of listed companies and preparation of investment related materials.</div>
+        <span class="work-card-tag">FINANCIAL ANALYSIS · RESEARCH · EXCEL</span>
+        <div class="work-card-arrow">↗</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- WORK EXPERIENCE -->
+  <section id="transactions">
+    <div class="reveal">
+      <div class="section-label">03 · Work Experience</div>
+      <h2 class="section-title">Deals &amp; <em>engagements</em></h2>
+    </div>
+    <p class="tx-firm-note reveal">Acumen M&amp;A Advisors LLP (India affiliate of Woodbridge International) · Articled Assistant · Feb 2023 – Feb 2026</p>
+    <div class="reveal" style="overflow-x:auto;">
+      <table class="tx-table">
+        <thead>
+          <tr>
+            <th>Mandate</th>
+            <th>Type</th>
+            <th>Sector</th>
+            <th>Scale</th>
+            <th>My Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Majority stake sell-side advisory</td>
+            <td><span class="tx-badge">Sell-Side M&amp;A</span></td>
+            <td>Packaging</td>
+            <td>INR 250 Cr EV</td>
+            <td>Core execution — 3-statement model + DCF, investor materials, 40+ buyer outreach, CXO engagement during negotiations</td>
+          </tr>
+          <tr>
+            <td>Growth capital fundraise</td>
+            <td><span class="tx-badge">Fundraise</span></td>
+            <td>FMCG Contract Manufacturing</td>
+            <td>INR 100 Cr</td>
+            <td>Led 3-member team — IRR model, capital structure scenarios, sector benchmarking, investor positioning with founders</td>
+          </tr>
+          <tr>
+            <td>Growth capital raise</td>
+            <td><span class="tx-badge">Fundraise</span></td>
+            <td>Housing Finance</td>
+            <td>USD 125 Mn</td>
+            <td>Financial model (loan book, capital adequacy, leverage), built 70-slide CIM in 9 days, collaborated with Tier-1 investment bank</td>
+          </tr>
+          <tr>
+            <td>IPO advisory</td>
+            <td><span class="tx-badge">IPO Advisory</span></td>
+            <td>Integrated Facility Management</td>
+            <td>INR 3,300 Cr+ revenue</td>
+            <td>Sub-segment &amp; client-level financial models, revenue KPI structuring for DRHP preparation</td>
+          </tr>
+          <tr>
+            <td>Embedded option valuation</td>
+            <td><span class="tx-badge">Valuation</span></td>
+            <td>Paints (Listed)</td>
+            <td>INR 4,500 Cr+ mkt cap</td>
+            <td>Monte Carlo simulation for valuing call &amp; put options on subsidiary's shares, analysed redemption liability and P&amp;L impact</td>
+          </tr>
+          <tr>
+            <td>Purchase price allocation</td>
+            <td><span class="tx-badge">Valuation</span></td>
+            <td>Paints (Listed)</td>
+            <td>-</td>
+            <td>Identified &amp; valued intangibles (product formulations, customer relationships) using Relief-from-Royalty and MPEEM</td>
+          </tr>
+          <tr>
+            <td>Pharma company valuation</td>
+            <td><span class="tx-badge">Valuation</span></td>
+            <td>Pharmaceuticals</td>
+            <td>INR 2,000 Cr+ revenue</td>
+            <td>DCF + market approach (comps &amp; precedent transactions) for PMS client — enterprise and equity value</td>
+          </tr>
+          <tr>
+            <td>Swap ratio analysis</td>
+            <td><span class="tx-badge">Transaction Structuring</span></td>
+            <td>FMCG</td>
+            <td class="tx-empty">-</td>
+            <td>Share exchange ratio via comparable company analysis, valuation sensitivity, post-merger ownership realignment</td>
+          </tr>
+          <tr>
+            <td>Buy-side target screening</td>
+            <td><span class="tx-badge">Buy-Side M&amp;A</span></td>
+            <td>Chemicals</td>
+            <td class="tx-empty">-</td>
+            <td>Acquisition target framework — revenue scale, margin profile, strategic fit; developed full target list</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="reveal">
+      <div class="section-label">04 · Capabilities</div>
+      <h2 class="section-title">Technical <em>toolkit</em></h2>
+    </div>
+    <div class="skills-grid reveal">
+      <div class="skill-block">
+        <div class="skill-block-title">Financial Modelling &amp; Presentation</div>
+        <ul class="skill-items">
+          <li>Integrated 3-statement models</li>
+          <li>IRR and NPV models</li>
+          <li>DCF and H model</li>
+          <li>CIM and teaser preparation</li>
+        </ul>
+      </div>
+      <div class="skill-block">
+        <div class="skill-block-title">Valuation</div>
+        <ul class="skill-items">
+          <li>Monte Carlo option valuation</li>
+          <li>Purchase price allocation</li>
+          <li>Swap ratio and exchange analysis</li>
+          <li>Trading and transaction comps</li>
+        </ul>
+      </div>
+      <div class="skill-block">
+        <div class="skill-block-title">Research &amp; Platforms</div>
+        <ul class="skill-items">
+          <li>S&amp;P Capital IQ</li>
+          <li>VCCEdge · Tracxn</li>
+          <li>Looker Studio dashboards</li>
+          <li>Sector &amp; industry research</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-left reveal">
+      <div class="section-label">05 · Contact</div>
+      <h2 class="section-title">Let's <em>connect.</em></h2>
+      <p class="contact-tagline">Open to opportunities in investment banking, valuation and corporate finance. Based in Pune, available across India.</p>
+      <div class="contact-links">
+        <a href="mailto:sarthakkawale08@gmail.com" class="contact-link">
+          <div>
+            <div class="contact-link-label">Email</div>
+            sarthakkawale08@gmail.com
+          </div>
+          <span class="contact-link-arrow">↗</span>
+        </a>
+        <a href="https://linkedin.com/in/sarthak-kawale" target="_blank" class="contact-link">
+          <div>
+            <div class="contact-link-label">LinkedIn</div>
+            linkedin.com/in/sarthak-kawale
+          </div>
+          <span class="contact-link-arrow">↗</span>
+        </a>
+        <a href="tel:+919359252472" class="contact-link">
+          <div>
+            <div class="contact-link-label">Phone</div>
+            +91 93592 52472
+          </div>
+          <span class="contact-link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+    <div class="contact-right reveal">
+      <div class="contact-detail-block">
+        <div class="contact-detail-label">Qualification</div>
+        <div class="contact-detail-value">Chartered Accountant — All levels, first attempt (Jan '26)</div>
+      </div>
+      <div class="contact-detail-block">
+        <div class="contact-detail-label">Most Recent Role</div>
+        <div class="contact-detail-value">Articled Assistant<br/>Acumen M&amp;A Advisors LLP · Feb 2023 – Feb 2026</div>
+      </div>
+      <div class="contact-detail-block">
+        <div class="contact-detail-label">Location</div>
+        <div class="contact-detail-value">Pune, Maharashtra, India</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 CA <em>S</em>arthak <em>K</em>awale</p>
+    <p class="footer-gold">Investment Banking · Deal Advisory · Valuation</p>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    (function animCursor() {
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animCursor);
+    })();
+
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => observer.observe(r));
+  </script>
+</body>
+</html>
